@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration name="Application" type="Application" factoryName="Application" nameIsGenerated="true">
+        <option name="MAIN_CLASS_NAME" value="architecture.Application"/>
+        <module name="architecture"/>
+        <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$"/>
+        <method v="2">
+            <option name="Make" enabled="true"/>
+        </method>
+    </configuration>
+</component>
