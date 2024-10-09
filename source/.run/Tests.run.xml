@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration name="Tests" type="JUnit" factoryName="JUnit">
+        <module name="architecture"/>
+        <method v="2">
+            <option name="Make" enabled="true"/>
+        </method>
+        <option name="TEST_OBJECT" value="package"/>
+        <option name="TEST_SEARCH_SCOPE">
+            <value defaultName="wholeProject"/>
+        </option>
+    </configuration>
+</component>
