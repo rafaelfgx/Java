@@ -1,0 +1,19 @@
+metricbeat.modules:
+  - module: system
+    period: 10s
+    metricsets:
+      - cpu
+      - memory
+      - network
+      - diskio
+      - filesystem
+
+processors:
+- add_host_metadata: ~
+- add_cloud_metadata: ~
+
+output.elasticsearch:
+  hosts: "127.0.0.0:9200"
+
+setup.kibana:
+  host: "127.0.0.0:5601"
