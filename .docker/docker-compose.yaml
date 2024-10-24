@@ -1,0 +1,138 @@
+name: java
+services:
+    application:
+        image: application
+        container_name: application
+        depends_on:
+            - elk-elasticsearch
+            - elk-kibana
+            - kafka
+            - localstack
+            - mongo
+            - postgres
+        build:
+            context: ..
+            dockerfile: .docker/dockerfile
+        ports:
+            - "8090:8080"
+        environment:
+            SPRING_PROFILES_ACTIVE: local
+            SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/database
+            SPRING_DATASOURCE_USERNAME: admin
+            SPRING_DATASOURCE_PASSWORD: password
+            SPRING_DATA_MONGODB_URI: mongodb://admin:password@mongo:27017/database?authSource=admin
+            SPRING_KAFKA: kafka:9092
+            SPRING_CLOUD_AWS_S3_BUCKET: bucket
+            SPRING_CLOUD_AWS_SQS_QUEUE: queue
+            SPRING_CLOUD_AWS_ENDPOINT: http://localstack:4566
+    elk-elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:8.15.2
+        container_name: elk-elasticsearch
+        ports:
+            - "9200:9200"
+            - "9300:9300"
+        volumes:
+            - elk-elasticsearch:/usr/share/elasticsearch/data
+        environment:
+            discovery.type: single-node
+            xpack.security.enabled: false
+            xpack.security.enrollment.enabled: false
+            ES_JAVA_OPTS: -Xms512m -Xmx512m
+    elk-kibana:
+        image: docker.elastic.co/kibana/kibana:8.15.2
+        container_name: elk-kibana
+        depends_on:
+            - elk-elasticsearch
+        ports:
+            - "5601:5601"
+        environment:
+            ELASTICSEARCH_URL: http://elk-elasticsearch:9200
+            ELASTICSEARCH_HOSTS: http://elk-elasticsearch:9200
+    kafka:
+        image: bitnami/kafka
+        container_name: kafka
+        ports:
+            - "9092:9092"
+            - "9094:9094"
+        environment:
+            KAFKA_KRAFT_CLUSTER_ID: 0
+            KAFKA_CFG_NODE_ID: 0
+            KAFKA_CFG_PROCESS_ROLES: controller,broker
+            KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: true
+            KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@kafka:9093
+            KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+            KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+            KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
+            KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+    kafka-admin:
+        image: obsidiandynamics/kafdrop
+        container_name: kafka-admin
+        depends_on:
+            - kafka
+        ports:
+            - "9000:9000"
+        environment:
+            KAFKA_BROKERCONNECT: kafka:9092
+    localstack:
+        image: localstack/localstack
+        container_name: localstack
+        ports:
+            - "4566:4566"
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - ./localstack.sh:/etc/localstack/init/ready.d/localstack.sh
+        environment:
+            - SERVICES=sqs,sqs-query,s3
+    mongo:
+        image: mongo
+        container_name: mongo
+        ports:
+            - "27017:27017"
+        volumes:
+            - mongo:/data/db
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: admin
+            MONGO_INITDB_ROOT_PASSWORD: password
+    mongo-admin:
+        image: mongo-express
+        container_name: mongo-admin
+        depends_on:
+            - mongo
+        ports:
+            - "27018:8081"
+        environment:
+            ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongo:27017
+            ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+            ME_CONFIG_MONGODB_ADMINPASSWORD: password
+            ME_CONFIG_BASICAUTH: false
+    postgres:
+        image: postgres
+        container_name: postgres
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres:/var/lib/postgresql/data
+        environment:
+            POSTGRES_DB: database
+            POSTGRES_USER: admin
+            POSTGRES_PASSWORD: password
+    postgres-admin:
+        image: dpage/pgadmin4
+        container_name: postgres-admin
+        depends_on:
+            - postgres
+        ports:
+            - "5433:80"
+        volumes:
+            - ./servers.json:/pgadmin4/servers.json
+            - postgres-admin:/var/lib/pgadmin
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@admin.com
+            PGADMIN_DEFAULT_PASSWORD: password
+            PGADMIN_CONFIG_SERVER_MODE: "False"
+            PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+volumes:
+    elk-elasticsearch:
+    mongo:
+    postgres:
+    postgres-admin:
