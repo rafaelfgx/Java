@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration name="Application" type="Application" factoryName="Application" nameIsGenerated="true">
+        <module name="architecture"/>
+        <option name="MAIN_CLASS_NAME" value="com.company.architecture.Application"/>
+        <option name="WORKING_DIRECTORY" value="$MODULE_WORKING_DIR$"/>
+        <envs>
+            <env name="SPRING_PROFILES_ACTIVE" value="local"/>
+            <env name="AWS_ENDPOINT" value="http://localhost:4566"/>
+            <env name="AWS_REGION" value="us-east-1"/>
+            <env name="AWS_ACCESS_KEY_ID" value="test"/>
+            <env name="AWS_SECRET_ACCESS_KEY" value="test"/>
+        </envs>
+        <method v="2">
+            <option name="Make" enabled="true"/>
+        </method>
+    </configuration>
+</component>
