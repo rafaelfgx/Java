@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+    <configuration name="Tests" type="JUnit" factoryName="JUnit">
+        <module name="architecture"/>
+        <option name="TEST_OBJECT" value="package"/>
+        <method v="2">
+            <option name="Make" enabled="true"/>
+        </method>
+    </configuration>
+</component>
