@@ -1,0 +1,13 @@
+FROM eclipse-temurin:24-jdk-alpine AS build
+RUN apk add --no-cache maven
+WORKDIR /source
+COPY source/pom.xml .
+RUN mvn dependency:go-offline -X
+COPY source .
+RUN mvn clean package -DskipTests -X
+
+FROM eclipse-temurin:24-jre-alpine
+WORKDIR /app
+COPY --from=build /source/target/*.jar app.jar
+EXPOSE 8090
+ENTRYPOINT ["java", "-jar", "app.jar"]

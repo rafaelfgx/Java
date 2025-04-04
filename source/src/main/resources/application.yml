@@ -1,0 +1,78 @@
+spring:
+    jpa:
+        hibernate:
+            ddl-auto: create
+        open-in-view: false
+        properties:
+            hibernate:
+                enable_lazy_load_no_trans: true
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        url: "${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/database}"
+        username: "${SPRING_DATASOURCE_USERNAME:admin}"
+        password: "${SPRING_DATASOURCE_PASSWORD:password}"
+    data:
+        mongodb:
+            uuid-representation: standard
+            uri: "${SPRING_DATA_MONGODB_URI:mongodb://admin:password@localhost:27017/database?authSource=admin}"
+    kafka:
+        bootstrap-servers: "${SPRING_KAFKA:localhost:9092}"
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+        consumer:
+            auto-offset-reset: earliest
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            properties.spring.json.trusted.packages: "*"
+    cloud:
+        aws:
+            s3:
+                bucket: "${SPRING_CLOUD_AWS_S3_BUCKET:bucket}"
+            sqs:
+                queue: "${SPRING_CLOUD_AWS_SQS_QUEUE:queue}"
+springdoc:
+    show-actuator: true
+    swagger-ui:
+        path: /
+        docExpansion: none
+        filter: true
+        tagsSorter: alpha
+        operationsSorter: alpha
+        tryItOutEnabled: true
+management:
+    endpoints:
+        enabled-by-default: false
+        web:
+            exposure:
+                include: "health,metrics"
+    endpoint:
+        health:
+            enabled: true
+        metrics:
+            enabled: true
+    tracing:
+        baggage:
+            enabled: true
+        enabled: true
+        propagation:
+            type: w3c
+        sampling:
+            probability: "1.0"
+logging:
+    pattern:
+        console: "[%d{yyyy-MM-dd}] [%d{HH:mm:ss}] %highlight([%level]) %cyan([%logger]): %msg%n%n"
+feign:
+    client:
+        config:
+            default:
+                retryer:
+                    enabled: true
+                    period: 100
+                    maxPeriod: 1000
+                    maxAttempts: 3
+                connectTimeout: 5000
+                readTimeout: 5000
+    clients:
+        jsonplaceholder:
+            url: "${FEIGN_CLIENTS_JSON_PLACEHOLDER_URL:https://jsonplaceholder.typicode.com}"
