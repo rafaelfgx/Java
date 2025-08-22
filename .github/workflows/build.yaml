@@ -1,0 +1,26 @@
+name: build
+on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Java Setup
+        uses: actions/setup-java@v4
+        with:
+          java-version: 24
+          distribution: temurin
+          cache: maven
+
+      - name: Java Publish
+        run: mvn -B clean package --file source/pom.xml
+
+      - name: Artifact Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: app
+          path: source/target/*.jar

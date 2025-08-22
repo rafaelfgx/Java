@@ -1,0 +1,36 @@
+<configuration>
+    <springProperty name="ELK_LOGSTASH" source="ELK_LOGSTASH" defaultValue="localhost:5000"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%cyan([%d{yyyy-MM-dd}] [%d{HH:mm:ss}] [%logger]) %highlight([%level]: %msg%n%n)</pattern>
+        </encoder>
+    </appender>
+
+    <springProfile name="default">
+        <logger name="com.company.architecture" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+
+        <root level="WARN">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="!default">
+        <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+            <destination>${ELK_LOGSTASH}</destination>
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+        </appender>
+
+        <logger name="com.company.architecture" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="LOGSTASH"/>
+        </logger>
+
+        <root level="WARN">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="LOGSTASH"/>
+        </root>
+    </springProfile>
+</configuration>
