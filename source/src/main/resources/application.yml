@@ -1,0 +1,60 @@
+spring:
+    jpa:
+        open-in-view: false
+        show-sql: false
+        hibernate:
+            ddl-auto: create
+        properties:
+            hibernate:
+                enable_lazy_load_no_trans: true
+                format_sql: true
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:5432/database
+        username: admin
+        password: password
+    data:
+        mongodb:
+            uuid-representation: standard
+            uri: mongodb://admin:password@localhost:27017/database?authSource=admin
+    kafka:
+        bootstrap-servers: localhost:9092
+        producer:
+            key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+            acks: all
+            retries: 3
+        consumer:
+            auto-offset-reset: earliest
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+            max-poll-records: 100
+            properties.spring.json.trusted.packages: "*"
+springdoc:
+    show-actuator: true
+    swagger-ui:
+        path: /
+        docExpansion: none
+        filter: true
+        tagsSorter: alpha
+        operationsSorter: alpha
+        tryItOutEnabled: true
+management:
+    endpoints:
+        enabled-by-default: false
+        web:
+            exposure:
+                include: "health,metrics"
+    endpoint:
+        health:
+            enabled: true
+        metrics:
+            enabled: true
+logging:
+    structured:
+        format:
+            console: logstash
+feign:
+    clients:
+        jsonplaceholder:
+            url: https://jsonplaceholder.typicode.com
